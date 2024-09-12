@@ -67,12 +67,10 @@
 ![ERD](doc/images/News.drawio.png)
 
 ## 개발 기간  예정기한
-> Dead Line 
-
+> Dead Line   
 2024-09-11 ~ 2024-09-20
 
-> Sprint
-
+> Sprint   
 2024-09-11 ~ 2024-09-
 
 ## 개발 환경 및 사용 기술
