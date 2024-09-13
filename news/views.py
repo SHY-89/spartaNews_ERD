@@ -46,11 +46,12 @@ class ArticleDetailView(APIView):
         return Response(serializer.data)
 
     # 게시글 수정
-    def put(self, request, pk):
-        article = get_object_or_404(Article, pk=pk)
+    def put(self, request, news_id):
+        article = get_object_or_404(Article, pk=news_id)
         if article.author != request.user:
             return Response("권한 없음", status=400)
-        serializer = ArticleSerializer(article, data=request.data)
+        serializer = ArticleSerializer(article, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+
