@@ -61,3 +61,17 @@ class ArticleDetailView(APIView):
         article = get_object_or_404(Article, pk=news_id)
         article.delete()
         return Response(status=204)
+
+
+#즐겨찾기
+class NewsFavorite(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, news_id):
+        article = get_object_or_404(Article, id=news_id)
+        if request.user in article.favorite.all():
+            article.favorite.remove(request.user)
+            return Response("즐겨찾기 취소")
+        else:
+            article.favorite.add(request.user)
+            return Response("즐겨찾기 완료!")
