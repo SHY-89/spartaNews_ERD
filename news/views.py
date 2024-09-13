@@ -55,3 +55,9 @@ class ArticleDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
 
+
+    # 게시글 삭제
+    def delete(self, request, news_id):
+        article = get_object_or_404(Article, pk=news_id)
+        article.delete()
+        return Response(status=204)
