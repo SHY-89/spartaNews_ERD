@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Article
-from .serializer import ArticleSerializer
+from .models import Article, Comment
+from .serializer import ArticleSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -75,3 +75,22 @@ class NewsFavorite(APIView):
         else:
             article.favorite.add(request.user)
             return Response("즐겨찾기 완료!")
+
+
+# 댓글
+class CommentViewSet(APIView):
+    # 댓글 목록 조회
+    def get(self, request, news_id):
+        article = get_object_or_404(Article, pk=news_id)
+        comments = article.comments_aticle.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+    # 댓글 생성
+    def post(self, request, news_id):
+        article = get_object_or_404(Article, pk=news_id)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(article=article, user=request.user)
+            return Response(serializer.data, status=201)
