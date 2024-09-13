@@ -105,3 +105,29 @@ class CommentDeleteViewSet(APIView):
             return Response("권한 없음", status=400)
         comment.delete()
         return Response(status=204)
+
+
+class CommentVote(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, news_id):
+        comment = get_object_or_404(Comment, id=news_id)
+        if request.user in comment.vote.all():
+            comment.vote.remove(request.user)
+            return Response("추천 취소")
+        else:
+            comment.vote.add(request.user)
+            return Response("추천 완료!")
+
+
+class CommentFavorite(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, news_id):
+        comment = get_object_or_404(Comment, id=news_id)
+        if request.user in comment.favorite.all():
+            comment.favorite.remove(request.user)
+            return Response("즐겨찾기 취소")
+        else:
+            comment.favorite.add(request.user)
+            return Response("즐겨찾기 완료!")
