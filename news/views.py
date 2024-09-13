@@ -34,4 +34,23 @@ class NewsVote(APIView):
             article.vote.add(request.user)
             return Response("추천 완료!")
 
-        
+
+class ArticleDetailView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+    # 게시글 상세 조회
+    def get(self, request, news_id):
+        article = get_object_or_404(Article, pk=news_id)
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data)
+
+    # 게시글 수정
+    def put(self, request, pk):
+        article = get_object_or_404(Article, pk=pk)
+        if article.author != request.user:
+            return Response("권한 없음", status=400)
+        serializer = ArticleSerializer(article, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
