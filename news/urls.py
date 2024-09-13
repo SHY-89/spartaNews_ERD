@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     path("",views.NewsListCreateView.as_view()),
+    path("<int:news_id>/vote/", views.NewsVote.as_view()),
 
 ]
 

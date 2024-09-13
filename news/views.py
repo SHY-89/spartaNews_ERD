@@ -3,8 +3,8 @@ from .models import Article
 from .serializer import ArticleSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 
 # 게시판 목록 기능 (누구나 이용 가능)
@@ -22,5 +22,16 @@ class NewsListCreateView(APIView):
             serializer.save(author= request.user)
             return Response(serializer.data)
 
+class NewsVote(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, news_id):
+        article = get_object_or_404(Article, id=news_id)
+        if request.user in article.vote.all():
+            article.vote.remove(request.user)
+            return Response("추천 취소")
+        else:
+            article.vote.add(request.user)
+            return Response("추천 완료!")
 
         
