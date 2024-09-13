@@ -79,6 +79,7 @@ class NewsFavorite(APIView):
 
 # 댓글
 class CommentViewSet(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     # 댓글 목록 조회
     def get(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
@@ -94,3 +95,13 @@ class CommentViewSet(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save(article=article, user=request.user)
             return Response(serializer.data, status=201)
+
+class CommentDeleteViewSet(APIView):
+    permission_classes = [IsAuthenticated]
+    # 댓글 삭제
+    def delete(self, request, news_id, comment_id):
+        comment = get_object_or_404(Comment, pk=comment_id)
+        if comment.user != request.user:
+            return Response("권한 없음", status=400)
+        comment.delete()
+        return Response(status=204)
