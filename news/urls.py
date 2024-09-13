@@ -6,7 +6,7 @@ from . import views
 
 urlpatterns = [
     path("",views.NewsListCreateView.as_view()),
-        
+
 ]
 
 
