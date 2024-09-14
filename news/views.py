@@ -5,14 +5,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q 
 
 # 게시판 목록 기능 (누구나 이용 가능)
 class NewsListCreateView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
-
+    # 검색 목록 조회
     def get(self,request):
-        articles=Article.objects.all()
+        query = request.GET.get("search") if request.GET.get("search") else ""
+        articles=Article.objects.filter(
+                Q(title__icontains=query) |  # 제목에 검색어가 포함된 경우
+                Q(content__icontains=query) |  # 내용에 검색어가 포함된 경우
+                Q(author__username__icontains=query)  # 작성자 이름에 검색어가 포함된 경우
+            )
         serializer= ArticleSerializer(articles, many=True)
         return Response(serializer.data)
     
@@ -55,7 +60,6 @@ class ArticleDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-
     # 게시글 삭제
     def delete(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
@@ -96,9 +100,11 @@ class CommentViewSet(APIView):
             serializer.save(article=article, user=request.user)
             return Response(serializer.data, status=201)
 
+
+# 댓글 삭제
 class CommentDeleteViewSet(APIView):
     permission_classes = [IsAuthenticated]
-    # 댓글 삭제
+
     def delete(self, request, news_id, comment_id):
         comment = get_object_or_404(Comment, pk=comment_id)
         if comment.user != request.user:
