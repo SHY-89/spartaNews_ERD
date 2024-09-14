@@ -131,3 +131,16 @@ class CommentFavorite(APIView):
         else:
             comment.favorite.add(request.user)
             return Response("즐겨찾기 완료!")
+
+
+# 대댓글
+class CommentReplyAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    # 대댓글 생성
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Article, pk=comment_id)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(article=comment.article, user=request.user, parent_comment=comment)
+            return Response(serializer.data, status=201)

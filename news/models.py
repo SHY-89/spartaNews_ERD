@@ -27,6 +27,8 @@ class Comment(models.Model):
     content = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments_user" )
     article  = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comments_aticle" )
+    #대댓글
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True )
 
     favorite = models.ManyToManyField(User, related_name="comments_favo")
     vote = models.ManyToManyField(User, related_name="comments_vote")

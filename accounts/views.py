@@ -74,3 +74,16 @@ class UserProfileView(APIView):
             return Response({'message': '프로필이 업데이트 되었습니다.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # Create your views here.
+
+
+class TestEmail(APIView):
+    def get(self, request):
+        from django.core.mail import send_mail
+        send_mail(
+            "Subject here",
+            "Here is the message.",
+            "tjduwkrn@gmail.com",
+            ["tjduwkrn@naver.com"],
+            fail_silently=False,
+        )
+        return Response()
