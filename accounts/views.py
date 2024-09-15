@@ -1,13 +1,18 @@
+from django.forms import ValidationError
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from accounts.serializers import UserProfileSerializer, UserSerializer
-from .models import User
 from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
 import re
+from .models import User
 
 # 회원 가입
 class Signup(APIView):
@@ -74,3 +79,44 @@ class UserProfileView(APIView):
             return Response({'message': '프로필이 업데이트 되었습니다.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # Create your views here.
+
+
+class TestEmail(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        self.object = request.user
+
+        send_mail(
+            '{}님의 회원가입 인증메일 입니다.'.format(self.object.username),
+            #[self.object.email],
+            render_to_string('accounts/email_verification.html', {
+                'user': self.object,
+                'uid': urlsafe_base64_encode(force_bytes(self.object.pk)).encode().decode(),
+                'domain': self.request.META['HTTP_HOST'],
+                'token': default_token_generator.make_token(self.object),
+            }),
+            'tjduwkrn@naver.com',
+            ['tjduwkrn@naver.com']
+        )
+        return Response()
+
+def activate(request, uid64, token):
+    message = "메일 인증에 실패했습니다."
+    try:
+        uid = force_str(urlsafe_base64_decode(uid64))
+        current_user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist, ValidationError):
+        context = {
+            "message": message
+        }
+        return render(request,"accounts/email_status.html",context)
+
+    if default_token_generator.check_token(current_user, token):
+        # current_user.is_active = True
+        # current_user.save()
+        message = "메일 인증에 성공했습니다."
+    
+    context = {
+        "message": message
+    }
+    return render(request,"accounts/email_status.html",context)
