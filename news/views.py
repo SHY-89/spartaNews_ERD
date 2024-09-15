@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Article, Comment
-from .serializer import ArticleSerializer, CommentSerializer
+from .serializer import ArticleSerializer, CommentSerializer, ArticleDetailSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -27,6 +27,10 @@ class NewsVote(APIView):
 
     def post(self, request, news_id):
         article = get_object_or_404(Article, id=news_id)
+        # 해당 글 작성자는 글 추천 못함
+        if article.author == request.user:
+            return Response("본인이 작성한 글은 추천할 수 없습니다.", status=403)
+
         if request.user in article.vote.all():
             article.vote.remove(request.user)
             return Response("추천 취소")
@@ -42,7 +46,7 @@ class ArticleDetailView(APIView):
     # 게시글 상세 조회
     def get(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
-        serializer = ArticleSerializer(article)
+        serializer = ArticleDetailSerializer(article)
         return Response(serializer.data)
 
     # 게시글 수정
