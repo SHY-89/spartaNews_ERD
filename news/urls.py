@@ -10,7 +10,6 @@ urlpatterns = [
     path("<int:news_id>/", views.ArticleDetailView.as_view()),
     path("<int:news_id>/favorite/", views.NewsFavorite.as_view()),
     path("<int:news_id>/comment/", views.CommentViewSet.as_view()),
-    path("<int:news_id>/comment/<int:comment_id>/", views.CommentDeleteViewSet.as_view()),
     path("comment/<int:comment_id>/vote/", views.CommentVote.as_view()),
     path("comment/<int:comment_id>/favorite/", views.CommentFavorite.as_view()),
 
