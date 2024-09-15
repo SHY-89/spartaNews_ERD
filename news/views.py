@@ -43,7 +43,6 @@ class NewsVote(APIView):
 class ArticleDetailView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-
     # 게시글 상세 조회
     def get(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
@@ -60,12 +59,19 @@ class ArticleDetailView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-    # 게시글 삭제
+
+# 게시글 삭제
     def delete(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
+        # 현재 요청한 사용자가 게시글의 작성자인지 확인
+        if article.author != request.user:
+            return Response("권한 없음", status=403)  # 403 Forbidden 응답 반환
+        
+        # 작성자인 경우 게시글을 삭제
         article.delete()
-        return Response(status=204)
 
+        # 삭제 완료 후 204 No Content 응답을 반환
+        return Response(status=204)
 
 #즐겨찾기
 class NewsFavorite(APIView):
