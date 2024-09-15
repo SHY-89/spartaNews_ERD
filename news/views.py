@@ -83,6 +83,10 @@ class NewsFavorite(APIView):
 
     def post(self, request, news_id):
         article = get_object_or_404(Article, id=news_id)
+        # 해당 글 작성자는 글 즐겨찾기 못함
+        if article.author == request.user:
+            return Response("본인이 작성한 글은 즐겨찾기를 할 수 없습니다.", status=403)
+
         if request.user in article.favorite.all():
             article.favorite.remove(request.user)
             return Response("즐겨찾기 취소")
@@ -97,7 +101,7 @@ class CommentViewSet(APIView):
     # 댓글 목록 조회
     def get(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
-        comments = article.comments_aticle.all()
+        comments = article.comments_aticle.filter(parent_comment=None)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
@@ -111,23 +115,14 @@ class CommentViewSet(APIView):
             return Response(serializer.data, status=201)
 
 
-# 댓글 삭제
-class CommentDeleteViewSet(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, news_id, comment_id):
-        comment = get_object_or_404(Comment, pk=comment_id)
-        if comment.user != request.user:
-            return Response("권한 없음", status=400)
-        comment.delete()
-        return Response(status=204)
-
-
 class CommentVote(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, news_id):
         comment = get_object_or_404(Comment, id=news_id)
+        # 해당 글 작성자는 글 추천 못함
+        if comment.author == request.user:
+            return Response("본인이 작성한 댓글은 추천할 수 없습니다.", status=403)
         if request.user in comment.vote.all():
             comment.vote.remove(request.user)
             return Response("추천 취소")
@@ -141,6 +136,9 @@ class CommentFavorite(APIView):
 
     def post(self, request, news_id):
         comment = get_object_or_404(Comment, id=news_id)
+        # 해당 글 작성자는 글 즐겨찾기 못함
+        if comment.author == request.user:
+            return Response("본인이 작성한 댓글은 즐겨찾기를 할 수 없습니다.", status=403)
         if request.user in comment.favorite.all():
             comment.favorite.remove(request.user)
             return Response("즐겨찾기 취소")
@@ -160,3 +158,10 @@ class CommentReplyAPIView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save(article=comment.article, user=request.user, parent_comment=comment)
             return Response(serializer.data, status=201)
+
+    def delete(self, request, comment_id):
+        comment = get_object_or_404(Comment, pk=comment_id)
+        if comment.user != request.user:
+            return Response("권한 없음", status=400)
+        comment.delete()
+        return Response(status=204)
