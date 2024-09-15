@@ -52,16 +52,18 @@ class UserProfileView(APIView):
         return Response(serializer.data)
     
     def patch(self, request, username):
-        user = request.user
+        user = get_object_or_404(User, username=username)
+        if user != request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         serializer = UserProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             email = request.data.get('email')
             if email and email != user.email and User.objects.filter(email=email).exists():
                 return Response({'message': '이미 사용중인 이메일입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-            if request.data.get('old_password'):
-                old_password = request.data.get('old_password')
-                new_password = request.data.get('new_password')
-                if new_password != old_password:
+            if request.data.get('new_password'):
+                new_password = request.data.get('new_password') # 패스워드 이름
+                cf_password = request.data.get('cf_password')
+                if cf_password != new_password:
                     return Response({'message': '동일하지 않은 password입니다.'}, status=status.HTTP_400_BAD_REQUEST)
                         # 비밀번호 검증
                 error = ''
