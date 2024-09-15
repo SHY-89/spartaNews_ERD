@@ -9,7 +9,7 @@ from django.utils import timezone
 class ArticleSerializer(serializers.ModelSerializer):
     comment_count = serializers.SerializerMethodField()
     time_before=serializers.SerializerMethodField()
-    content= serializers.SerializerMethodField()
+    content= serializers.CharField(allow_blank=False)
 
     def get_comment_count(self,obj):
         return obj.comments_aticle.count()
