@@ -86,7 +86,7 @@ class UserProfileView(APIView):
 
 class SendEmail(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request):
+    def get(self, request):
         self.object = request.user
         if not request.user.email:
             return Response("먼저 이메일을 등록 하셔야합니다.",status=400)
