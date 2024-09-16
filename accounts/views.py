@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 import re
+from django.conf import settings
 from .models import User
 
 # 회원 가입
@@ -83,22 +84,23 @@ class UserProfileView(APIView):
 # Create your views here.
 
 
-class TestEmail(APIView):
+class SendEmail(APIView):
     permission_classes = [IsAuthenticated]
-    def get(self, request):
+    def post(self, request):
         self.object = request.user
-
+        if not request.user.email:
+            return Response("먼저 이메일을 등록 하셔야합니다.",status=400)
         send_mail(
             '{}님의 회원가입 인증메일 입니다.'.format(self.object.username),
-            #[self.object.email],
-            render_to_string('accounts/email_verification.html', {
+            None,
+            settings.EMAIL_HOST_USER,
+            [request.user.email],
+            html_message=render_to_string('accounts/email_verification.html', {
                 'user': self.object,
                 'uid': urlsafe_base64_encode(force_bytes(self.object.pk)).encode().decode(),
                 'domain': self.request.META['HTTP_HOST'],
                 'token': default_token_generator.make_token(self.object),
             }),
-            'tjduwkrn@naver.com',
-            ['tjduwkrn@naver.com']
         )
         return Response()
 
