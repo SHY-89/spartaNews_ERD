@@ -82,6 +82,9 @@
     django-seed 0.3.1 
     djangorestframework 3.15.2 
     djangorestframework-simplejwt 5.3.1
+    requests==2.32.3
+    bs4==0.0.2
+    beautifulsoup4==4.12.3
     
 ## API Reference
 
