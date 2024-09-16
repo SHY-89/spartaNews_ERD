@@ -6,7 +6,7 @@ from django.utils import timezone
 
 
 # 게시글 목록 시리얼라이저
-class ArticleSerializer(serializers.ModelSerializer):
+class NewsSerializer(serializers.ModelSerializer):
     comment_count = serializers.SerializerMethodField()
     time_before=serializers.SerializerMethodField()
     content= serializers.CharField(allow_blank=False, write_only=True)
@@ -67,7 +67,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         else:
             return "방금 전"   
         
-class ArticleDetailSerializer(serializers.ModelSerializer):
+class NewsDetailSerializer(serializers.ModelSerializer):
     comment_count = serializers.SerializerMethodField()
     time_before=serializers.SerializerMethodField()
     content= serializers.CharField(allow_blank=False)

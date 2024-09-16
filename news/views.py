@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Article, Comment
-from .serializer import ArticleSerializer, CommentSerializer, ArticleDetailSerializer
+from .serializer import NewsSerializer, CommentSerializer, NewsDetailSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -18,11 +18,11 @@ class NewsListCreateView(APIView):
                 Q(content__icontains=query) |  # 내용에 검색어가 포함된 경우
                 Q(author__username__icontains=query)  # 작성자 이름에 검색어가 포함된 경우
             )
-        serializer= ArticleSerializer(articles, many=True)
+        serializer= NewsSerializer(articles, many=True)
         return Response(serializer.data)
     
     def post(self,request):
-        serializer= ArticleSerializer(data=request.data)
+        serializer= NewsSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(author= request.user)
             return Response(serializer.data)
@@ -44,13 +44,13 @@ class NewsVote(APIView):
             return Response("추천 완료!")
 
 
-class ArticleDetailView(APIView):
+class NewsDetailView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     # 게시글 상세 조회
     def get(self, request, news_id):
         article = get_object_or_404(Article, pk=news_id)
-        serializer = ArticleDetailSerializer(article)
+        serializer = NewsDetailSerializer(article)
         return Response(serializer.data)
 
     # 게시글 수정
@@ -58,7 +58,7 @@ class ArticleDetailView(APIView):
         article = get_object_or_404(Article, pk=news_id)
         if article.author != request.user:
             return Response("권한 없음", status=400)
-        serializer = ArticleSerializer(article, data=request.data, partial=True)
+        serializer = NewsSerializer(article, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
