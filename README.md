@@ -130,3 +130,6 @@
 | POST     | /api/news/comments/<int:coment_id>/    | 대댓글 등록                        | `content`                                   | JSON        |
 | POST       | /api/news/comment/<int:comment_id>/favorite/ | 댓글 즐겨찾기               | 없음                                   | JSON        |
 | POST       | /api/news/comment/<int:comment_id>/vote/ | 댓글 투표하기                  | 없음                                   | JSON        |
+
+### API 문서
+- https://www.notion.so/teamsparta/66da1b2b732a436e8eff3841a0c77b74?v=aff2525f9dda4af6828b9f99577b71c4
