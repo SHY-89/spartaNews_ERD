@@ -13,9 +13,11 @@ class Command(BaseCommand):
         soup = BeautifulSoup(data.text, 'html.parser')
         news_list = soup.select(".sa_text_title._NLOG_IMPRESSION")
         for e, news in enumerate(news_list, 1):
-            print(e, news.text, news.attrs["href"])
-        # title = soup.select_one(".media_end_head_headline")
-        # content = soup.select_one(".go_trans._article_content")
-        # print(title.text)
-        # print(content.text)
+            new_url = news.attrs["href"]
+            news_data = requests.get(new_url,headers=headers)
+            news_soup = BeautifulSoup(news_data.text, 'html.parser')
+            title = news_soup.select_one(".media_end_head_headline")
+            content = news_soup.select_one(".go_trans._article_content")
+            print(title.text)
+            print(content.text)
     
