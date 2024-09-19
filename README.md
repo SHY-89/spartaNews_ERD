@@ -19,6 +19,7 @@
             - 아이디
             - 비밀번호
         - 로그아웃
+        - 토큰 재발급
         - 회원 정보 수정
             - 아이디 노출
             - 가입일 노출
@@ -101,6 +102,7 @@
 | POST       | /api/accounts/signup   | 회원 가입                       | `username`, `password`, `password_ok`  | JSON        |
 | POST       | /api/accounts/login      | 로그인                           | `username`, `password`                 | JSON        |
 | POST       | /api/accounts/logout     | 로그아웃                         | 없음                                   | JSON        |
+| POST       | /api/accounts/logout     | 토큰재발급                     | `refresh`                                   | JSON        |
 | GET        | /api/accounts/profile/<str:username>/     | 회원 정보 조회      | 없음                | JSON        |
 | PATCH        | /api/accounts/profile/<str:username>/     | 회원 정보 수정    | `introduction`, `email`, `password` , `password_ok`                 | JSON        |
 | POST        | /api/accounts/send-email/     | 메일전송    | 없음                | JSON        |
