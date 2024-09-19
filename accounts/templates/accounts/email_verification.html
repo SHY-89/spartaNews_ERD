@@ -1,0 +1,17 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <a href="http://{{ domain }}{% url 'accounts:activate' uid64=uid token=token %}">
+            <button style="border:2px solid #000; padding: 10px;">인증하기</button>
+        </a>
+    </div> 
+</body>
+</html>
+{% endautoescape %}
