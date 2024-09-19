@@ -99,10 +99,10 @@
 
 | **메소드** | **엔드포인트**            | **설명**                          | **요청 본문**                           | **응답**     |
 |------------|--------------------------|----------------------------------|----------------------------------------|-------------|
-| POST       | /api/accounts/signup   | 회원 가입                       | `username`, `password`, `password_ok`  | JSON        |
-| POST       | /api/accounts/login      | 로그인                           | `username`, `password`                 | JSON        |
-| POST       | /api/accounts/logout     | 로그아웃                         | 없음                                   | JSON        |
-| POST       | /api/accounts/logout     | 토큰재발급                     | `refresh`                                   | JSON        |
+| POST       | /api/accounts/signup/   | 회원 가입                       | `username`, `password`, `password_ok`  | JSON        |
+| POST       | /api/accounts/login/      | 로그인                           | `username`, `password`                 | JSON        |
+| POST       | /api/accounts/logout/     | 로그아웃                         | 없음                                   | JSON        |
+| POST       | /api/accounts/token/refresh/     | 토큰재발급                     | `refresh`                                   | JSON        |
 | GET        | /api/accounts/profile/<str:username>/     | 회원 정보 조회      | 없음                | JSON        |
 | PATCH        | /api/accounts/profile/<str:username>/     | 회원 정보 수정    | `introduction`, `email`, `password` , `password_ok`                 | JSON        |
 | POST        | /api/accounts/send-email/     | 메일전송    | 없음                | JSON        |
