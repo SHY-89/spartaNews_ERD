@@ -40,8 +40,11 @@ class Signup(APIView):
             return Response({'error':error},status=400)
         
         # 유저 검증 통과 시,
-        user=User.objects.create_user(username=username,password=password)
-        return Response(status=200)
+        if User.objects.filter(username=username):
+            return Response({"error":"중복된 아이디가 있습니다."},status=400)
+        else:
+            user=User.objects.create_user(username=username,password=password)
+            return Response(status=200)
 
 
 # profile 조회
