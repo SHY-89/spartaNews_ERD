@@ -127,11 +127,20 @@ class CommentSerializer(serializers.ModelSerializer):
     )  # 작성자는 읽기전용으로 / 'source=' 으로 username만 가져옴
 
     parent_comment = serializers.SerializerMethodField()
-    def get_parent_comment(self,obj):
-        answer = CommentSerializer(data=obj.parent_comment.all(), many=True)
-        return answer.data
+    def get_parent_comment(self, obj):
+        serializer = self.__class__(obj.recommen, many=True)
+        serializer.bind('', self)
+        return serializer.data
     
     class Meta:
         model = Comment
         fields = '__all__' 
-        read_only_fields = ('article', 'favorite', 'vote')
+        read_only_fields = ('article', 'favorite', 'vote', 'parent_comment')
+
+
+# 대댓글 등록
+class CommentReplySerializer(serializers.ModelSerializer):    
+    class Meta:
+        model = Comment
+        fields = '__all__' 
+        read_only_fields = ('article', 'favorite', 'vote','user','parent_comment')

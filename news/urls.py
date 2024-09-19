@@ -13,7 +13,7 @@ urlpatterns = [
     path("comment/<int:comment_id>/vote/", views.CommentVote.as_view()),
     path("comment/<int:comment_id>/favorite/", views.CommentFavorite.as_view()),
 
-    path("comments/<int:comment_id>/", views.CommentViewSet.as_view()),
+    path("comments/<int:comment_id>/", views.CommentReplyAPIView.as_view()),
 ]
 
 

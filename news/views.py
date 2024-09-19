@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Article, Comment
-from .serializer import NewsSerializer, CommentSerializer, NewsDetailSerializer
+from .serializer import NewsSerializer, CommentSerializer, NewsDetailSerializer, CommentReplySerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -118,10 +118,10 @@ class CommentViewSet(APIView):
 class CommentVote(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, news_id):
-        comment = get_object_or_404(Comment, id=news_id)
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
         # 해당 글 작성자는 글 추천 못함
-        if comment.author == request.user:
+        if comment.user == request.user:
             return Response("본인이 작성한 댓글은 추천할 수 없습니다.", status=403)
         if request.user in comment.vote.all():
             comment.vote.remove(request.user)
@@ -134,10 +134,10 @@ class CommentVote(APIView):
 class CommentFavorite(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, news_id):
-        comment = get_object_or_404(Comment, id=news_id)
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
         # 해당 글 작성자는 글 즐겨찾기 못함
-        if comment.author == request.user:
+        if comment.user == request.user:
             return Response("본인이 작성한 댓글은 즐겨찾기를 할 수 없습니다.", status=403)
         if request.user in comment.favorite.all():
             comment.favorite.remove(request.user)
@@ -153,8 +153,8 @@ class CommentReplyAPIView(APIView):
 
     # 대댓글 생성
     def post(self, request, comment_id):
-        comment = get_object_or_404(Article, pk=comment_id)
-        serializer = CommentSerializer(data=request.data)
+        comment = get_object_or_404(Comment, pk=comment_id)
+        serializer = CommentReplySerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(article=comment.article, user=request.user, parent_comment=comment)
             return Response(serializer.data, status=201)
